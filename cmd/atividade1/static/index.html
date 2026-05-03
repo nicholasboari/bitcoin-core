@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bitcoin Node Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Regtest Node</p>
+          <h1>Bitcoin Core Dashboard</h1>
+        </div>
+        <div class="status-pill" id="refresh-status">Atualizando...</div>
+      </header>
+
+      <section class="metrics-grid" aria-label="Métricas do node">
+        <article class="metric-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Mempool Intelligence</p>
+              <h2>Total de transações</h2>
+            </div>
+            <span class="card-icon" aria-hidden="true">M</span>
+          </div>
+
+          <strong class="primary-value" id="tx-count">--</strong>
+
+          <dl class="detail-list">
+            <div>
+              <dt>Fee média</dt>
+              <dd><span id="avg-fee-rate">--</span> sat/vB</dd>
+            </div>
+            <div>
+              <dt>VSize total</dt>
+              <dd><span id="total-vsize">--</span> vB</dd>
+            </div>
+          </dl>
+
+          <div class="distribution" aria-label="Distribuição de fees">
+            <div class="distribution-row">
+              <span>Low</span>
+              <meter id="fee-low-meter" min="0" max="1" value="0"></meter>
+              <strong id="fee-low">--</strong>
+            </div>
+            <div class="distribution-row">
+              <span>Medium</span>
+              <meter id="fee-medium-meter" min="0" max="1" value="0"></meter>
+              <strong id="fee-medium">--</strong>
+            </div>
+            <div class="distribution-row">
+              <span>High</span>
+              <meter id="fee-high-meter" min="0" max="1" value="0"></meter>
+              <strong id="fee-high">--</strong>
+            </div>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Node Sync Status</p>
+              <h2>Lag entre headers e blocks</h2>
+            </div>
+            <span class="card-icon sync" aria-hidden="true">S</span>
+          </div>
+
+          <strong class="primary-value" id="sync-lag">--</strong>
+
+          <dl class="detail-list">
+            <div>
+              <dt>Blocks</dt>
+              <dd id="blocks">--</dd>
+            </div>
+            <div>
+              <dt>Headers</dt>
+              <dd id="headers">--</dd>
+            </div>
+          </dl>
+
+          <div class="sync-state" id="sync-state">Aguardando dados</div>
+        </article>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

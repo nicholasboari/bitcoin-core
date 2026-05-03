@@ -1,11 +1,16 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"os/exec"
 )
+
+//go:embed static/*
+var staticFiles embed.FS
 
 func main() {
 	// aqui retorna o resumo da mempool
@@ -72,7 +77,14 @@ func main() {
 		json.NewEncoder(w).Encode(blockchainInfo)
 	})
 
-	err := http.ListenAndServe(":8080", nil)
+	staticRoot, err := fs.Sub(staticFiles, "static")
+	if err != nil {
+		panic(err)
+	}
+
+	http.Handle("/", http.FileServer(http.FS(staticRoot)))
+
+	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
 		panic(err)
 	}
