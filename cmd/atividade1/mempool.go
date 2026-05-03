@@ -21,6 +21,7 @@ func calculateMempoolSummary(mempool map[string]MempoolTx) MempoolSummary {
 
 	first := true
 
+	// percorre as transações da mempool
 	for _, tx := range mempool {
 		if tx.VSize == 0 {
 			continue

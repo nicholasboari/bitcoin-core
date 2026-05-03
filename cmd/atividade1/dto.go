@@ -16,3 +16,9 @@ type MempoolSummary struct {
 	MaxFeeRate      float64        `json:"max_fee_rate"`
 	FeeDistribution map[string]int `json:"fee_distribution"`
 }
+
+type BlockchainInfo struct {
+	Blocks          int `json:"blocks"`
+	Headers         int `json:"headers"`
+	BlocksToHeaders int `json:"blocks_to_headers"`
+}
