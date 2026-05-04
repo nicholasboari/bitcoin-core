@@ -18,26 +18,18 @@ func eventsSummaryHandler(store *EventStore) http.HandlerFunc {
 
 		query := r.URL.Query()
 
-		var summary EventsSummary
+		seconds := defaultSummarySeconds
 		if rawSeconds := query.Get("seconds"); rawSeconds != "" {
-			seconds, ok := parsePositiveInt(rawSeconds)
+			parsedSeconds, ok := parsePositiveInt(rawSeconds)
 			if !ok {
 				http.Error(w, "seconds must be a positive integer", http.StatusBadRequest)
 				return
 			}
 
-			summary = store.SummaryLastSeconds(seconds, time.Now())
-		} else if rawEvents := query.Get("events"); rawEvents != "" {
-			events, ok := parsePositiveInt(rawEvents)
-			if !ok {
-				http.Error(w, "events must be a positive integer", http.StatusBadRequest)
-				return
-			}
-
-			summary = store.SummaryLastEvents(events)
-		} else {
-			summary = store.SummaryLastSeconds(defaultSummarySeconds, time.Now())
+			seconds = parsedSeconds
 		}
+
+		summary := store.SummaryLastSeconds(seconds, time.Now())
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(summary)
