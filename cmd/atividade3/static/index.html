@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bitcoin Wallet Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Regtest Wallets</p>
+          <h1>Bitcoin Wallet Dashboard</h1>
+        </div>
+        <div class="status-pill" id="refresh-status">Atualizando...</div>
+      </header>
+
+      <section class="metrics-grid" aria-label="Resumo de wallets">
+        <article class="metric-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Wallet Selection</p>
+              <h2>Wallet ativa</h2>
+            </div>
+            <span class="card-icon" aria-hidden="true">W</span>
+          </div>
+
+          <strong class="primary-value compact" id="selected-wallet">--</strong>
+
+          <form class="wallet-form" id="wallet-form">
+            <label for="wallet-select">Selecionar wallet</label>
+            <div class="form-row">
+              <select id="wallet-select" name="wallet"></select>
+              <button type="submit">Selecionar</button>
+            </div>
+          </form>
+
+          <div class="wallet-state" id="wallet-state">Aguardando seleção</div>
+        </article>
+
+        <article class="metric-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Wallet Info</p>
+              <h2>Informações básicas</h2>
+            </div>
+            <span class="card-icon balance" aria-hidden="true">B</span>
+          </div>
+
+          <strong class="primary-value" id="wallet-balance">--</strong>
+
+          <dl class="detail-list">
+            <div>
+              <dt>Nome</dt>
+              <dd id="wallet-name">--</dd>
+            </div>
+            <div>
+              <dt>Transações</dt>
+              <dd id="wallet-txcount">--</dd>
+            </div>
+          </dl>
+        </article>
+      </section>
+
+      <section class="wallets-grid" aria-label="Wallets disponíveis e carregadas">
+        <article class="metric-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Wallet Directory</p>
+              <h2>Disponíveis</h2>
+            </div>
+            <span class="card-icon directory" aria-hidden="true">D</span>
+          </div>
+          <ol class="wallet-list" id="available-wallets"></ol>
+        </article>
+
+        <article class="metric-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Loaded Wallets</p>
+              <h2>Carregadas</h2>
+            </div>
+            <span class="card-icon loaded" aria-hidden="true">L</span>
+          </div>
+          <ol class="wallet-list" id="loaded-wallets"></ol>
+        </article>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
