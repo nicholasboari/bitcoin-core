@@ -30,6 +30,12 @@ type LatestEvents struct {
 	Txs    []LatestTxEvent    `json:"txs"`
 }
 
+type StateComparison struct {
+	BestBlock     string `json:"best_block"`
+	LastSeenBlock string `json:"last_seen_block"`
+	Divergence    bool   `json:"divergence"`
+}
+
 type EventStore struct {
 	mu     sync.RWMutex
 	limit  int

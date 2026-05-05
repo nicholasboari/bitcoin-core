@@ -2,8 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os/exec"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -51,6 +54,31 @@ func latestEventsHandler(store *EventStore) http.HandlerFunc {
 	}
 }
 
+func stateComparisonHandler(store *EventStore) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		bestBlock, err := getBestBlockHash()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		lastSeenBlock := store.LastSeenBlock()
+		comparison := StateComparison{
+			BestBlock:     bestBlock,
+			LastSeenBlock: lastSeenBlock,
+			Divergence:    bestBlock != lastSeenBlock,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(comparison)
+	}
+}
+
 func parsePositiveInt(value string) (int, bool) {
 	parsed, err := strconv.Atoi(value)
 	if err != nil || parsed <= 0 {
@@ -58,4 +86,15 @@ func parsePositiveInt(value string) (int, bool) {
 	}
 
 	return parsed, true
+}
+
+func getBestBlockHash() (string, error) {
+	cmd := exec.Command("bitcoin-cli", "-regtest", "getbestblockhash")
+
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return "", fmt.Errorf("erro ao executar bitcoin-cli: %v\nsaida: %s", err, string(output))
+	}
+
+	return strings.TrimSpace(string(output)), nil
 }

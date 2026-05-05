@@ -66,14 +66,7 @@ func listenOnce(ctx context.Context, address string, topic string, store *EventS
 }
 
 func bitcoinHashToString(b []byte) string {
-	// inverter deixa igual ao formato exibido em exploradores
-	reversed := make([]byte, len(b))
-
-	for i := range b {
-		reversed[i] = b[len(b)-1-i]
-	}
-
-	return hex.EncodeToString(reversed)
+	return hex.EncodeToString(b)
 }
 
 func waitForReconnect(ctx context.Context) bool {

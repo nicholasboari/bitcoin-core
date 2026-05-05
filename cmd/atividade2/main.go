@@ -27,6 +27,7 @@ func main() {
 
 	http.HandleFunc("/api/events/summary", eventsSummaryHandler(store))
 	http.HandleFunc("/api/events/latest", latestEventsHandler(store))
+	http.HandleFunc("/api/events/state-comparison", stateComparisonHandler(store))
 
 	fmt.Println("http listening on", httpAddress)
 	if err := http.ListenAndServe(httpAddress, nil); err != nil {

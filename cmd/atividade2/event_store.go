@@ -108,6 +108,19 @@ func (s *EventStore) Latest(limit int) LatestEvents {
 	return latest
 }
 
+func (s *EventStore) LastSeenBlock() string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	for i := len(s.events) - 1; i >= 0; i-- {
+		if s.events[i].Topic == blockTopic {
+			return s.events[i].Hash
+		}
+	}
+
+	return ""
+}
+
 func summarizeEvents(events []ObservedEvent) EventsSummary {
 	var summary EventsSummary
 
