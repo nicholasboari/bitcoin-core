@@ -11,12 +11,13 @@ func NewEventStore(limit int) *EventStore {
 	}
 }
 
-func (s *EventStore) Add(topic string, observedAt int64) {
+func (s *EventStore) Add(topic string, hash string, observedAt int64) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	s.events = append(s.events, ObservedEvent{
 		Topic:      topic,
+		Hash:       hash,
 		ObservedAt: observedAt,
 	})
 
@@ -70,6 +71,43 @@ func (s *EventStore) SummaryLastEvents(count int) EventsSummary {
 	return summary
 }
 
+func (s *EventStore) Latest(limit int) LatestEvents {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	var latest LatestEvents
+
+	for i := len(s.events) - 1; i >= 0; i-- {
+		event := s.events[i]
+
+		switch event.Topic {
+		case blockTopic:
+			if len(latest.Blocks) < limit {
+				latest.Blocks = append(latest.Blocks, LatestBlockEvent{
+					Hash: event.Hash,
+					Ts:   event.ObservedAt,
+				})
+			}
+		case txTopic:
+			if len(latest.Txs) < limit {
+				latest.Txs = append(latest.Txs, LatestTxEvent{
+					TxID: event.Hash,
+					Ts:   event.ObservedAt,
+				})
+			}
+		}
+
+		if len(latest.Blocks) == limit && len(latest.Txs) == limit {
+			break
+		}
+	}
+
+	reverseBlocks(latest.Blocks)
+	reverseTxs(latest.Txs)
+
+	return latest
+}
+
 func summarizeEvents(events []ObservedEvent) EventsSummary {
 	var summary EventsSummary
 
@@ -87,4 +125,16 @@ func summarizeEvents(events []ObservedEvent) EventsSummary {
 	}
 
 	return summary
+}
+
+func reverseBlocks(events []LatestBlockEvent) {
+	for left, right := 0, len(events)-1; left < right; left, right = left+1, right-1 {
+		events[left], events[right] = events[right], events[left]
+	}
+}
+
+func reverseTxs(events []LatestTxEvent) {
+	for left, right := 0, len(events)-1; left < right; left, right = left+1, right-1 {
+		events[left], events[right] = events[right], events[left]
+	}
 }

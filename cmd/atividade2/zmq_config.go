@@ -29,7 +29,7 @@ func listen(ctx context.Context, address string, topic string, store *EventStore
 }
 
 func listenOnce(ctx context.Context, address string, topic string, store *EventStore) error {
-	// O socket SUB recebe mensagens publicadas pelo Bitcoin Core via ZMQ.
+	// socket SUB recebe mensagens publicadas
 	sub := zmq.NewSub(ctx)
 	defer sub.Close()
 
@@ -37,7 +37,7 @@ func listenOnce(ctx context.Context, address string, topic string, store *EventS
 		return err
 	}
 
-	// SetSubscribe filtra para receber apenas o tópico desejado.
+	// filtra para receber apenas os tópicos que configuramos
 	if err := sub.SetOption(zmq.OptionSubscribe, topic); err != nil {
 		return err
 	}
@@ -57,16 +57,16 @@ func listenOnce(ctx context.Context, address string, topic string, store *EventS
 		eventTopic := string(msg.Frames[0])
 		hashBytes := msg.Frames[1]
 		observedAt := time.Now()
-
-		store.Add(eventTopic, observedAt.Unix())
 		hash := bitcoinHashToString(hashBytes)
+
+		store.Add(eventTopic, hash, observedAt.Unix())
 
 		fmt.Printf("event=%s hash=%s observed_at=%s\n", eventTopic, hash, observedAt.Format(time.RFC3339))
 	}
 }
 
 func bitcoinHashToString(b []byte) string {
-	// O Bitcoin envia hashes em little-endian; inverter deixa igual ao formato exibido em exploradores.
+	// inverter deixa igual ao formato exibido em exploradores
 	reversed := make([]byte, len(b))
 
 	for i := range b {

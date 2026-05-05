@@ -8,6 +8,7 @@ import (
 )
 
 const defaultSummarySeconds = 60
+const defaultLatestEvents = 10
 
 func eventsSummaryHandler(store *EventStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -33,6 +34,20 @@ func eventsSummaryHandler(store *EventStore) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(summary)
+	}
+}
+
+func latestEventsHandler(store *EventStore) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		latest := store.Latest(defaultLatestEvents)
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(latest)
 	}
 }
 

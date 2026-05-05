@@ -26,6 +26,7 @@ func main() {
 	go listen(ctx, txAddress, txTopic, store)
 
 	http.HandleFunc("/api/events/summary", eventsSummaryHandler(store))
+	http.HandleFunc("/api/events/latest", latestEventsHandler(store))
 
 	fmt.Println("http listening on", httpAddress)
 	if err := http.ListenAndServe(httpAddress, nil); err != nil {
