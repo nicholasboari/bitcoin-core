@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bitcoin Events Dashboard</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Regtest Events</p>
+          <h1>Bitcoin ZMQ Dashboard</h1>
+        </div>
+        <div class="status-pill" id="refresh-status">Atualizando...</div>
+      </header>
+
+      <section class="metrics-grid" aria-label="Resumo de eventos">
+        <article class="metric-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Event Activity</p>
+              <h2>Eventos observados</h2>
+            </div>
+            <span class="card-icon" aria-hidden="true">E</span>
+          </div>
+
+          <strong class="primary-value" id="event-rate">--</strong>
+
+          <dl class="detail-list">
+            <div>
+              <dt>Transações recebidas</dt>
+              <dd id="tx-observed">--</dd>
+            </div>
+            <div>
+              <dt>Blocos recebidos</dt>
+              <dd id="blocks-observed">--</dd>
+            </div>
+          </dl>
+
+          <div class="event-state" id="event-state">Aguardando eventos</div>
+        </article>
+
+        <article class="metric-card" id="divergence-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">State Comparison</p>
+              <h2>RPC vs ZMQ</h2>
+            </div>
+            <span class="card-icon warning" aria-hidden="true">!</span>
+          </div>
+
+          <strong class="primary-value compact" id="divergence-value">--</strong>
+
+          <dl class="hash-list">
+            <div>
+              <dt>Best block</dt>
+              <dd id="best-block">--</dd>
+            </div>
+            <div>
+              <dt>Último bloco visto</dt>
+              <dd id="last-seen-block">--</dd>
+            </div>
+          </dl>
+        </article>
+      </section>
+
+      <section class="events-grid" aria-label="Últimos eventos">
+        <article class="metric-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Últimos Eventos</p>
+              <h2>Transações</h2>
+            </div>
+            <span class="card-icon tx" aria-hidden="true">T</span>
+          </div>
+          <ol class="event-list" id="tx-list"></ol>
+        </article>
+
+        <article class="metric-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Últimos Eventos</p>
+              <h2>Blocos</h2>
+            </div>
+            <span class="card-icon block" aria-hidden="true">B</span>
+          </div>
+          <ol class="event-list" id="block-list"></ol>
+        </article>
+      </section>
+    </main>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

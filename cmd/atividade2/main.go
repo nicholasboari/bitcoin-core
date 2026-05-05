@@ -2,9 +2,14 @@ package main
 
 import (
 	"context"
+	"embed"
 	"fmt"
+	"io/fs"
 	"net/http"
 )
+
+//go:embed static/*
+var staticFiles embed.FS
 
 const (
 	blockAddress = "tcp://127.0.0.1:28332"
@@ -28,6 +33,13 @@ func main() {
 	http.HandleFunc("/api/events/summary", eventsSummaryHandler(store))
 	http.HandleFunc("/api/events/latest", latestEventsHandler(store))
 	http.HandleFunc("/api/events/state-comparison", stateComparisonHandler(store))
+
+	staticRoot, err := fs.Sub(staticFiles, "static")
+	if err != nil {
+		panic(err)
+	}
+
+	http.Handle("/", http.FileServer(http.FS(staticRoot)))
 
 	fmt.Println("http listening on", httpAddress)
 	if err := http.ListenAndServe(httpAddress, nil); err != nil {
