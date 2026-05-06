@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -89,7 +90,8 @@ func parsePositiveInt(value string) (int, bool) {
 }
 
 func getBestBlockHash() (string, error) {
-	cmd := exec.Command("bitcoin-cli", "-regtest", "getbestblockhash")
+	commandArgs := append(bitcoinCLIBaseArgs(), "getbestblockhash")
+	cmd := exec.Command("bitcoin-cli", commandArgs...)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -97,4 +99,23 @@ func getBestBlockHash() (string, error) {
 	}
 
 	return strings.TrimSpace(string(output)), nil
+}
+
+func bitcoinCLIBaseArgs() []string {
+	args := []string{"-regtest"}
+
+	if value := os.Getenv("BITCOIN_RPC_CONNECT"); value != "" {
+		args = append(args, "-rpcconnect="+value)
+	}
+	if value := os.Getenv("BITCOIN_RPC_PORT"); value != "" {
+		args = append(args, "-rpcport="+value)
+	}
+	if value := os.Getenv("BITCOIN_RPC_USER"); value != "" {
+		args = append(args, "-rpcuser="+value)
+	}
+	if value := os.Getenv("BITCOIN_RPC_PASSWORD"); value != "" {
+		args = append(args, "-rpcpassword="+value)
+	}
+
+	return args
 }

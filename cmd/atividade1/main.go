@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"os"
 	"os/exec"
 )
 
@@ -20,7 +21,7 @@ func main() {
 			return
 		}
 
-		cmd := exec.Command("bitcoin-cli", "-regtest", "getrawmempool", "true")
+		cmd := bitcoinCLICommand("getrawmempool", "true")
 
 		output, err := cmd.CombinedOutput()
 		if err != nil {
@@ -52,7 +53,7 @@ func main() {
 			return
 		}
 
-		cmd := exec.Command("bitcoin-cli", "-regtest", "getblockchaininfo")
+		cmd := bitcoinCLICommand("getblockchaininfo")
 
 		output, err := cmd.CombinedOutput()
 		if err != nil {
@@ -88,4 +89,28 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func bitcoinCLICommand(args ...string) *exec.Cmd {
+	commandArgs := append(bitcoinCLIBaseArgs(), args...)
+	return exec.Command("bitcoin-cli", commandArgs...)
+}
+
+func bitcoinCLIBaseArgs() []string {
+	args := []string{"-regtest"}
+
+	if value := os.Getenv("BITCOIN_RPC_CONNECT"); value != "" {
+		args = append(args, "-rpcconnect="+value)
+	}
+	if value := os.Getenv("BITCOIN_RPC_PORT"); value != "" {
+		args = append(args, "-rpcport="+value)
+	}
+	if value := os.Getenv("BITCOIN_RPC_USER"); value != "" {
+		args = append(args, "-rpcuser="+value)
+	}
+	if value := os.Getenv("BITCOIN_RPC_PASSWORD"); value != "" {
+		args = append(args, "-rpcpassword="+value)
+	}
+
+	return args
 }

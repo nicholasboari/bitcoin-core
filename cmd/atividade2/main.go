@@ -6,14 +6,15 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"os"
 )
 
 //go:embed static/*
 var staticFiles embed.FS
 
 const (
-	blockAddress = "tcp://127.0.0.1:28332"
-	txAddress    = "tcp://127.0.0.1:28333"
+	defaultBlockAddress = "tcp://127.0.0.1:28332"
+	defaultTxAddress    = "tcp://127.0.0.1:28333"
 
 	blockTopic = "hashblock"
 	txTopic    = "hashtx"
@@ -25,6 +26,8 @@ const (
 func main() {
 	ctx := context.Background()
 	store := NewEventStore(maxStoredEvents)
+	blockAddress := envOrDefault("BITCOIN_ZMQ_BLOCK_ADDRESS", defaultBlockAddress)
+	txAddress := envOrDefault("BITCOIN_ZMQ_TX_ADDRESS", defaultTxAddress)
 
 	// aqui inicia 2 goroutines para escutar os tópicos hashblock e hashtx
 	go listen(ctx, blockAddress, blockTopic, store)
@@ -45,4 +48,12 @@ func main() {
 	if err := http.ListenAndServe(httpAddress, nil); err != nil {
 		panic(err)
 	}
+}
+
+func envOrDefault(key string, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+
+	return defaultValue
 }

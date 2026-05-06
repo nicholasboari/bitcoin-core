@@ -1,0 +1,78 @@
+services:
+  bitcoin:
+    image: ruimarinho/bitcoin-core:27
+    command:
+      - -datadir=/bitcoin
+      - -regtest
+      - -server=1
+      - -fallbackfee=0.00001
+      - -rpcbind=0.0.0.0
+      - -rpcallowip=0.0.0.0/0
+      - -rpcuser=bitcoin
+      - -rpcpassword=bitcoin
+      - -zmqpubhashblock=tcp://0.0.0.0:28332
+      - -zmqpubhashtx=tcp://0.0.0.0:28333
+    volumes:
+      - bitcoin-data:/bitcoin
+    ports:
+      - "18443:18443"
+
+  atividade1:
+    build:
+      context: .
+      args:
+        APP: atividade1
+    environment:
+      BITCOIN_RPC_CONNECT: bitcoin
+      BITCOIN_RPC_USER: bitcoin
+      BITCOIN_RPC_PASSWORD: bitcoin
+    depends_on:
+      - bitcoin
+    ports:
+      - "8080:8080"
+
+  atividade2:
+    build:
+      context: .
+      args:
+        APP: atividade2
+    environment:
+      BITCOIN_RPC_CONNECT: bitcoin
+      BITCOIN_RPC_USER: bitcoin
+      BITCOIN_RPC_PASSWORD: bitcoin
+      BITCOIN_ZMQ_BLOCK_ADDRESS: tcp://bitcoin:28332
+      BITCOIN_ZMQ_TX_ADDRESS: tcp://bitcoin:28333
+    depends_on:
+      - bitcoin
+    ports:
+      - "8081:8081"
+
+  atividade3:
+    build:
+      context: .
+      args:
+        APP: atividade3
+    environment:
+      BITCOIN_RPC_CONNECT: bitcoin
+      BITCOIN_RPC_USER: bitcoin
+      BITCOIN_RPC_PASSWORD: bitcoin
+    depends_on:
+      - bitcoin
+    volumes:
+      - atividade3-data:/data
+    ports:
+      - "8082:8082"
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on:
+      - atividade1
+      - atividade2
+      - atividade3
+    profiles:
+      - tunnel
+
+volumes:
+  bitcoin-data:
+  atividade3-data:

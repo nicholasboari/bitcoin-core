@@ -663,15 +663,35 @@ func ageSeconds(txid string, fallbackUnix int64, now int64) int64 {
 }
 
 func runNodeRPC(args ...string) ([]byte, error) {
-	commandArgs := append([]string{"-regtest"}, args...)
+	commandArgs := append(bitcoinCLIBaseArgs(), args...)
 	cmd := exec.Command("bitcoin-cli", commandArgs...)
 	return cmd.CombinedOutput()
 }
 
 func runWalletRPC(wallet string, args ...string) ([]byte, error) {
-	commandArgs := append([]string{"-regtest", "-rpcwallet=" + wallet}, args...)
+	commandArgs := append(bitcoinCLIBaseArgs(), "-rpcwallet="+wallet)
+	commandArgs = append(commandArgs, args...)
 	cmd := exec.Command("bitcoin-cli", commandArgs...)
 	return cmd.CombinedOutput()
+}
+
+func bitcoinCLIBaseArgs() []string {
+	args := []string{"-regtest"}
+
+	if value := os.Getenv("BITCOIN_RPC_CONNECT"); value != "" {
+		args = append(args, "-rpcconnect="+value)
+	}
+	if value := os.Getenv("BITCOIN_RPC_PORT"); value != "" {
+		args = append(args, "-rpcport="+value)
+	}
+	if value := os.Getenv("BITCOIN_RPC_USER"); value != "" {
+		args = append(args, "-rpcuser="+value)
+	}
+	if value := os.Getenv("BITCOIN_RPC_PASSWORD"); value != "" {
+		args = append(args, "-rpcpassword="+value)
+	}
+
+	return args
 }
 
 func btcToSats(amount float64) int64 {
