@@ -102,7 +102,7 @@ func getBestBlockHash() (string, error) {
 }
 
 func bitcoinCLIBaseArgs() []string {
-	args := []string{"-regtest"}
+	args := bitcoinCLINetworkArgs()
 
 	if value := os.Getenv("BITCOIN_RPC_CONNECT"); value != "" {
 		args = append(args, "-rpcconnect="+value)
@@ -118,4 +118,15 @@ func bitcoinCLIBaseArgs() []string {
 	}
 
 	return args
+}
+
+func bitcoinCLINetworkArgs() []string {
+	network := os.Getenv("BITCOIN_NETWORK")
+	if network == "" {
+		network = "regtest"
+	}
+	if network == "mainnet" {
+		return nil
+	}
+	return []string{"-" + network}
 }

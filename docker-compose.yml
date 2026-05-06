@@ -5,8 +5,9 @@ services:
       args:
         APP: atividade1
     environment:
+      BITCOIN_NETWORK: ${BITCOIN_NETWORK:-regtest}
       BITCOIN_RPC_CONNECT: host.docker.internal
-      BITCOIN_RPC_PORT: 18443
+      BITCOIN_RPC_PORT: ${BITCOIN_RPC_PORT:-18443}
       BITCOIN_RPC_USER: bitcoin
       BITCOIN_RPC_PASSWORD: bitcoin
     extra_hosts:
@@ -20,8 +21,9 @@ services:
       args:
         APP: atividade2
     environment:
+      BITCOIN_NETWORK: ${BITCOIN_NETWORK:-regtest}
       BITCOIN_RPC_CONNECT: host.docker.internal
-      BITCOIN_RPC_PORT: 18443
+      BITCOIN_RPC_PORT: ${BITCOIN_RPC_PORT:-18443}
       BITCOIN_RPC_USER: bitcoin
       BITCOIN_RPC_PASSWORD: bitcoin
       BITCOIN_ZMQ_BLOCK_ADDRESS: tcp://host.docker.internal:28332
@@ -37,8 +39,9 @@ services:
       args:
         APP: atividade3
     environment:
+      BITCOIN_NETWORK: ${BITCOIN_NETWORK:-regtest}
       BITCOIN_RPC_CONNECT: host.docker.internal
-      BITCOIN_RPC_PORT: 18443
+      BITCOIN_RPC_PORT: ${BITCOIN_RPC_PORT:-18443}
       BITCOIN_RPC_USER: bitcoin
       BITCOIN_RPC_PASSWORD: bitcoin
     extra_hosts:
