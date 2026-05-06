@@ -1,33 +1,16 @@
 services:
-  bitcoin:
-    image: ruimarinho/bitcoin-core:27
-    command:
-      - -datadir=/bitcoin
-      - -regtest
-      - -server=1
-      - -fallbackfee=0.00001
-      - -rpcbind=0.0.0.0
-      - -rpcallowip=0.0.0.0/0
-      - -rpcuser=bitcoin
-      - -rpcpassword=bitcoin
-      - -zmqpubhashblock=tcp://0.0.0.0:28332
-      - -zmqpubhashtx=tcp://0.0.0.0:28333
-    volumes:
-      - bitcoin-data:/bitcoin
-    ports:
-      - "18443:18443"
-
   atividade1:
     build:
       context: .
       args:
         APP: atividade1
     environment:
-      BITCOIN_RPC_CONNECT: bitcoin
+      BITCOIN_RPC_CONNECT: host.docker.internal
+      BITCOIN_RPC_PORT: 18443
       BITCOIN_RPC_USER: bitcoin
       BITCOIN_RPC_PASSWORD: bitcoin
-    depends_on:
-      - bitcoin
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "8080:8080"
 
@@ -37,13 +20,14 @@ services:
       args:
         APP: atividade2
     environment:
-      BITCOIN_RPC_CONNECT: bitcoin
+      BITCOIN_RPC_CONNECT: host.docker.internal
+      BITCOIN_RPC_PORT: 18443
       BITCOIN_RPC_USER: bitcoin
       BITCOIN_RPC_PASSWORD: bitcoin
-      BITCOIN_ZMQ_BLOCK_ADDRESS: tcp://bitcoin:28332
-      BITCOIN_ZMQ_TX_ADDRESS: tcp://bitcoin:28333
-    depends_on:
-      - bitcoin
+      BITCOIN_ZMQ_BLOCK_ADDRESS: tcp://host.docker.internal:28332
+      BITCOIN_ZMQ_TX_ADDRESS: tcp://host.docker.internal:28333
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "8081:8081"
 
@@ -53,11 +37,12 @@ services:
       args:
         APP: atividade3
     environment:
-      BITCOIN_RPC_CONNECT: bitcoin
+      BITCOIN_RPC_CONNECT: host.docker.internal
+      BITCOIN_RPC_PORT: 18443
       BITCOIN_RPC_USER: bitcoin
       BITCOIN_RPC_PASSWORD: bitcoin
-    depends_on:
-      - bitcoin
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - atividade3-data:/data
     ports:
@@ -74,5 +59,4 @@ services:
       - tunnel
 
 volumes:
-  bitcoin-data:
   atividade3-data:

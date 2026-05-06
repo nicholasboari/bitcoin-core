@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG BITCOIN_IMAGE=ruimarinho/bitcoin-core:27
+ARG BITCOIN_IMAGE=ruimarinho/bitcoin-core:23
 
 FROM golang:1.26-alpine AS build
 

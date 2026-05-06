@@ -11,14 +11,15 @@ Projeto em Go com interfaces web para interagir com um node Bitcoin Core local e
 Instale:
 
 - Go `1.26.1` ou compativel com o `go.mod`.
-- Bitcoin Core com `bitcoind` e `bitcoin-cli` disponiveis no `PATH`.
+- Bitcoin Core instalado no host, com `bitcoind` e `bitcoin-cli` disponiveis no `PATH`.
+- Docker e Docker Compose, caso queira executar as atividades em containers.
 - Dependencias de ZMQ do sistema, necessarias para a atividade 2.
 
-No Ubuntu/Debian, as dependencias de ZMQ podem ser instaladas com:
+No Ubuntu/Debian:
 
 ```bash
 sudo apt update
-sudo apt install -y libzmq3-dev pkg-config
+sudo apt install -y build-essential curl libzmq3-dev pkg-config
 ```
 
 Confira as instalacoes:
@@ -29,7 +30,37 @@ bitcoind -version
 bitcoin-cli -version
 ```
 
+## Instalar Bitcoin Core no Ubuntu Server
+
+Baixe o Bitcoin Core pelo site oficial:
+
+```text
+https://bitcoincore.org/en/download/
+```
+
+No Ubuntu Server, escolha o arquivo Linux correspondente a arquitetura da maquina. Para a maioria dos notebooks e PCs, use `x86_64-linux-gnu.tar.gz`.
+
+Exemplo usando uma versao baixada manualmente:
+
+```bash
+tar -xzf bitcoin-*-x86_64-linux-gnu.tar.gz
+sudo install -m 0755 -o root -g root -t /usr/local/bin bitcoin-*/bin/*
+```
+
+Valide:
+
+```bash
+bitcoind -version
+bitcoin-cli -version
+```
+
 ## Configurar o Bitcoin Core em regtest
+
+Crie o diretorio de configuracao:
+
+```bash
+mkdir -p ~/.bitcoin
+```
 
 Crie ou edite o arquivo `~/.bitcoin/bitcoin.conf`:
 
@@ -37,9 +68,16 @@ Crie ou edite o arquivo `~/.bitcoin/bitcoin.conf`:
 regtest=1
 server=1
 fallbackfee=0.00001
-zmqpubhashblock=tcp://127.0.0.1:28332
-zmqpubhashtx=tcp://127.0.0.1:28333
+rpcbind=0.0.0.0
+rpcallowip=127.0.0.1
+rpcallowip=172.16.0.0/12
+rpcuser=bitcoin
+rpcpassword=bitcoin
+zmqpubhashblock=tcp://0.0.0.0:28332
+zmqpubhashtx=tcp://0.0.0.0:28333
 ```
+
+Essas opcoes permitem que os containers das atividades acessem o Bitcoin Core rodando no host pela rede do Docker. Para uso local fora do Docker, os mesmos comandos continuam funcionando.
 
 Inicie o node:
 
@@ -134,39 +172,44 @@ http://localhost:8082
 
 ## Executar com Docker Compose
 
-O `docker-compose.yml` sobe:
+O `docker-compose.yml` sobe apenas as aplicacoes do projeto. O Bitcoin Core deve estar instalado e rodando no host Ubuntu Server.
 
-- `bitcoin`: Bitcoin Core em `regtest`, com RPC e ZMQ habilitados.
 - `atividade1`: dashboard de mempool/blockchain em `http://localhost:8080`.
 - `atividade2`: dashboard ZMQ em `http://localhost:8081`.
 - `atividade3`: dashboard de wallets em `http://localhost:8082`.
 - `cloudflared`: opcional, para expor os dashboards via Cloudflare Tunnel.
 
+Antes de subir o compose, deixe o Bitcoin Core rodando no host:
+
+```bash
+bitcoind -regtest
+```
+
 Suba os servicos principais:
 
 ```bash
-docker compose up --build bitcoin atividade1 atividade2 atividade3
+docker compose up --build atividade1 atividade2 atividade3
 ```
 
-Em outro terminal, crie a wallet e gere saldo dentro do container do Bitcoin Core:
+Em outro terminal, crie a wallet e gere saldo usando o `bitcoin-cli` do host:
 
 ```bash
-docker compose exec bitcoin bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoin createwallet teste
-docker compose exec bitcoin bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoin -rpcwallet=teste getnewaddress
+bitcoin-cli -regtest createwallet teste
+bitcoin-cli -regtest -rpcwallet=teste getnewaddress
 ```
 
 Minere 101 blocos para liberar saldo:
 
 ```bash
-ADDR=$(docker compose exec -T bitcoin bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoin -rpcwallet=teste getnewaddress)
-docker compose exec bitcoin bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoin generatetoaddress 101 "$ADDR"
+ADDR=$(bitcoin-cli -regtest -rpcwallet=teste getnewaddress)
+bitcoin-cli -regtest generatetoaddress 101 "$ADDR"
 ```
 
 Para confirmar transacoes no regtest:
 
 ```bash
-ADDR=$(docker compose exec -T bitcoin bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoin -rpcwallet=teste getnewaddress)
-docker compose exec bitcoin bitcoin-cli -regtest -rpcuser=bitcoin -rpcpassword=bitcoin generatetoaddress 1 "$ADDR"
+ADDR=$(bitcoin-cli -regtest -rpcwallet=teste getnewaddress)
+bitcoin-cli -regtest generatetoaddress 1 "$ADDR"
 ```
 
 Para parar:
@@ -175,10 +218,16 @@ Para parar:
 docker compose down
 ```
 
-Para apagar dados de blockchain/wallet e o historico local da atividade 3:
+Para apagar o historico local persistido pela atividade 3:
 
 ```bash
 docker compose down -v
+```
+
+Esse comando nao apaga a blockchain nem as wallets do Bitcoin Core instalado no host. Para parar o node manualmente:
+
+```bash
+bitcoin-cli -regtest stop
 ```
 
 ### Cloudflare Tunnel
