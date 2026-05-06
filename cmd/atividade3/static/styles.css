@@ -80,13 +80,15 @@ h2 {
 }
 
 .metrics-grid,
-.wallets-grid {
+.wallets-grid,
+.action-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18px;
 }
 
-.wallets-grid {
+.wallets-grid,
+.action-grid {
   margin-top: 18px;
 }
 
@@ -131,6 +133,11 @@ h2 {
 .card-icon.loaded {
   background: rgba(53, 209, 143, 0.14);
   color: var(--green);
+}
+
+.card-icon.send {
+  background: rgba(240, 113, 103, 0.14);
+  color: var(--red);
 }
 
 .primary-value {
@@ -180,7 +187,8 @@ dd {
   margin-bottom: 18px;
 }
 
-.wallet-form label {
+.wallet-form label,
+.send-form label {
   color: var(--muted);
   font-size: 0.82rem;
 }
@@ -192,6 +200,7 @@ dd {
 }
 
 select,
+input,
 button {
   min-height: 42px;
   border: 1px solid var(--border);
@@ -199,7 +208,8 @@ button {
   font: inherit;
 }
 
-select {
+select,
+input {
   min-width: 0;
   background: var(--panel-strong);
   color: var(--text);
@@ -238,6 +248,22 @@ button:disabled {
   color: var(--red);
 }
 
+.context-line {
+  margin: 24px 0 18px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.context-line strong {
+  color: var(--text);
+}
+
+.send-form {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
 .wallet-list {
   display: grid;
   gap: 10px;
@@ -269,6 +295,82 @@ button:disabled {
   font-weight: 400;
 }
 
+.transaction-card {
+  display: flex;
+  min-height: 360px;
+  flex-direction: column;
+}
+
+.transaction-list {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.transaction-item {
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel-strong);
+  padding: 14px;
+}
+
+.transaction-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.txid {
+  overflow: hidden;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tx-status {
+  border-radius: 999px;
+  background: rgba(98, 168, 245, 0.14);
+  color: var(--blue);
+  font-size: 0.75rem;
+  padding: 5px 8px;
+  text-transform: uppercase;
+}
+
+.transaction-item.confirmed .tx-status {
+  background: rgba(53, 209, 143, 0.14);
+  color: var(--green);
+}
+
+.transaction-item.unknown .tx-status {
+  background: rgba(240, 113, 103, 0.14);
+  color: var(--red);
+}
+
+.transaction-meta,
+.transaction-message,
+.transaction-warning {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.transaction-warning {
+  color: var(--yellow);
+  font-weight: 700;
+}
+
+.transaction-list .empty-state {
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
 @media (max-width: 760px) {
   .dashboard {
     width: min(100% - 24px, 1120px);
@@ -278,12 +380,14 @@ button:disabled {
   .topbar,
   .metrics-grid,
   .wallets-grid,
+  .action-grid,
   .form-row {
     display: grid;
   }
 
   .metrics-grid,
   .wallets-grid,
+  .action-grid,
   .detail-list,
   .form-row {
     grid-template-columns: 1fr;

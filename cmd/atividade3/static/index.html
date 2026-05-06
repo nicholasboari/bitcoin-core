@@ -59,7 +59,59 @@
               <dt>Transações</dt>
               <dd id="wallet-txcount">--</dd>
             </div>
+            <div>
+              <dt>UTXOs</dt>
+              <dd id="wallet-utxos">--</dd>
+            </div>
           </dl>
+        </article>
+      </section>
+
+      <section class="action-grid" aria-label="Envio e acompanhamento de transações">
+        <article class="metric-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Transaction Builder</p>
+              <h2>Enviar transação</h2>
+            </div>
+            <span class="card-icon send" aria-hidden="true">T</span>
+          </div>
+
+          <p class="context-line">
+            A transação será criada e assinada pela wallet
+            <strong id="send-wallet-context">--</strong>.
+          </p>
+
+          <form class="send-form" id="send-form">
+            <label for="send-address">Endereço de destino</label>
+            <input id="send-address" name="address" autocomplete="off" required />
+
+            <label for="send-amount">Valor em BTC</label>
+            <input
+              id="send-amount"
+              name="amount"
+              inputmode="decimal"
+              min="0.00000001"
+              step="0.00000001"
+              type="number"
+              required
+            />
+
+            <button type="submit">Criar, assinar e transmitir</button>
+          </form>
+
+          <div class="wallet-state" id="send-state">Aguardando dados da transação</div>
+        </article>
+
+        <article class="metric-card transaction-card">
+          <div class="card-header">
+            <div>
+              <p class="eyebrow">Tracked Transactions</p>
+              <h2>Transações enviadas</h2>
+            </div>
+            <span class="card-icon loaded" aria-hidden="true">S</span>
+          </div>
+          <ol class="transaction-list" id="transaction-list"></ol>
         </article>
       </section>
 
