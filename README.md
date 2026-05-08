@@ -93,13 +93,25 @@ O compose sobe apenas as atividades. O Bitcoin Core roda fora do Docker, no host
 Signet:
 
 ```bash
+BITCOIN_NETWORK=signet docker compose up --build atividade1
 BITCOIN_NETWORK=signet BITCOIN_RPC_PORT=38332 docker compose up --build atividade2 atividade3
 ```
 
-Regtest:
+## Rodar sem Docker
 
 ```bash
-docker compose up --build atividade1 atividade2 atividade3
+go mod download
+go run ./cmd/atividade1
+go run ./cmd/atividade2
+go run ./cmd/atividade3
+```
+
+Para rodar em signet sem Docker (RECOMENDADO):
+
+```bash
+BITCOIN_NETWORK=signet go run ./cmd/atividade1
+BITCOIN_NETWORK=signet BITCOIN_RPC_PORT=38332 go run ./cmd/atividade2
+BITCOIN_NETWORK=signet BITCOIN_RPC_PORT=38332 go run ./cmd/atividade3
 ```
 
 Acessos:
@@ -114,21 +126,6 @@ De outro PC na mesma rede, troque `localhost` pelo IP do servidor:
 
 ```bash
 hostname -I
-```
-
-## Rodar sem Docker
-
-```bash
-go mod download
-go run ./cmd/atividade1
-go run ./cmd/atividade2
-go run ./cmd/atividade3
-```
-
-Para rodar em signet sem Docker:
-
-```bash
-BITCOIN_NETWORK=signet BITCOIN_RPC_PORT=38332 go run ./cmd/atividade3
 ```
 
 ## Cloudflare Tunnel
